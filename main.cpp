@@ -6,7 +6,7 @@ DigitalOut Stepper_Motor_2_Speed(p7);
 DigitalOut Stepper_Motor_2_Direction(p8);
 DigitalIn US_Sensor_Echo(p9);
 DigitalOut US_Sensor_Trig(p10);
-BusIn IR_Sensors(p11,p12,p13,p14,p15,p16,17);
+BusIn IR_Sensors(p11,p12,p13,p14,p15,p16,p17);
 
 Timer t;
 void check_US_sensor_distance(    int Distance_from_Front_Wall;){
@@ -73,6 +73,9 @@ int main(){
             check_US_sensor_distance();
             check_movement();
             maze_location();
+        }
+        else {
+        //reset
         }
     }
 }
