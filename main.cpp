@@ -192,10 +192,10 @@ void mouse_location( bool front, bool left, bool right){
             number_of_maze_cells[x][y] = 999; //wipe everthing
 
     // Goal is centre of maze?
-    number_of_maze_cells[3][3] = 0;
-    number_of_maze_cells[3][4] = 0;
-    number_of_maze_cells[4][3] = 0;
-    number_of_maze_cells[4][4] = 0;
+    number_of_maze_cells[7][7] = 0;
+    number_of_maze_cells[7][8] = 0;
+    number_of_maze_cells[8][7] = 0;
+    number_of_maze_cells[8][8] = 0;
 
     //need to update this section for bfs (I used AI for this bit couldnt figure out myself or find where to look)
     int queue_x[64], queue_y[64];
