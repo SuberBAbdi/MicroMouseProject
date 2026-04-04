@@ -29,7 +29,7 @@ int first_calculate = 0;
 double check_us_distance(bool ECHO){
     uint32_t echo_time = 0; //supposed to have values range from 0 - 49000
 
-    //Trigger pulse function 
+    //Trigger pulse function
     US_Sensor_Trig = 0;
     wait_us(2);
     US_Sensor_Trig = 1;
@@ -109,7 +109,7 @@ void update_walls(int orientation, bool front, bool left, bool right){
         }
 }
 
-void mouse_location( bool front, bool left, bool right){ 
+void mouse_location( bool front, bool left, bool right){
     // North = 0, East = 1, South = 2, West = 3
      if (orientation == 0){
         if(front == false){
@@ -191,19 +191,14 @@ void mouse_location( bool front, bool left, bool right){
         for(int y = 0; y < 8; y++)
             number_of_maze_cells[x][y] = 999; //wipe everthing
 
-    // Goal is centre of maze?
+    // Goal is centre of maze? or top right?
     number_of_maze_cells[7][7] = 0;
-    number_of_maze_cells[7][8] = 0;
-    number_of_maze_cells[8][7] = 0;
-    number_of_maze_cells[8][8] = 0;
 
     //need to update this section for bfs (I used AI for this bit couldnt figure out myself or find where to look)
     int queue_x[64], queue_y[64];
     int head = 0, tail = 0;
-    queue_x[tail] = 3; queue_y[tail] = 3; tail++;
-    queue_x[tail] = 3; queue_y[tail] = 4; tail++;
-    queue_x[tail] = 4; queue_y[tail] = 3; tail++;
-    queue_x[tail] = 4; queue_y[tail] = 4; tail++;
+    queue_x[tail] = 7; queue_y[tail] = 7; tail++;
+
 
     while(head != tail){
         int cx = queue_x[head];
@@ -223,7 +218,7 @@ void mouse_location( bool front, bool left, bool right){
 }
 
 void flood_fill_setup(){ // need to fix, to setup up the 2d array details, of inital lees number
-    calculate_flood_fill(); //this will do everthing 
+    calculate_flood_fill(); //this will do everthing
 }
 
 
@@ -260,10 +255,10 @@ void flood_fill_update(){
 
 
 void steps(){ // expand on loops when testing hardware
-    Stepper_Motor_1_Step = 1; 
+    Stepper_Motor_1_Step = 1;
     Stepper_Motor_2_Step = 1;
     wait_us(1000);
-    Stepper_Motor_1_Step = 0; 
+    Stepper_Motor_1_Step = 0;
     Stepper_Motor_2_Step = 0;
     wait_us(1000);
 }
@@ -310,9 +305,8 @@ int main(){
         wait_us(10000);
         update_walls(front, left, right);
         wait_us(10000);
-    
-        if((mouse_position_x == 3 || mouse_position_x == 4) &&
-           (mouse_position_y == 3 || mouse_position_y == 4)){
+   
+        if(mouse_position_x == 7 && mouse_position_y == 7){
             break;
         // end program
         }
