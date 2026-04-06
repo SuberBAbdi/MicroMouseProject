@@ -29,7 +29,7 @@ int first_calculate = 0;
 double check_us_distance(bool ECHO){
     uint32_t echo_time = 0; //supposed to have values range from 0 - 49000
 
-    //Trigger pulse function
+    //Trigger pulse function 
     US_Sensor_Trig = 0;
     wait_us(2);
     US_Sensor_Trig = 1;
@@ -109,7 +109,7 @@ void update_walls(int orientation, bool front, bool left, bool right){
         }
 }
 
-void mouse_location( bool front, bool left, bool right){
+void mouse_location( bool front, bool left, bool right){ 
     // North = 0, East = 1, South = 2, West = 3
      if (orientation == 0){
         if(front == false){
@@ -185,80 +185,127 @@ void mouse_location( bool front, bool left, bool right){
 }
 
     void calculate_flood_fill(){
-    //lee's assign lee's number to eac
-    // Reset all cells to max
-    for(int x = 0; x < 8; x++)
-        for(int y = 0; y < 8; y++)
-            number_of_maze_cells[x][y] = 999; //wipe everthing
+    // So this initialise all cells to 0
+    for(int x = 0; x < 8; x++){
+        number_of_maze_cells[x][0] = 0;
+        number_of_maze_cells[x][1] = 0;
+        number_of_maze_cells[x][2] = 0;
+        number_of_maze_cells[x][3] = 0;
+        number_of_maze_cells[x][4] = 0;
+        number_of_maze_cells[x][5] = 0;
+        number_of_maze_cells[x][6] = 0;
+        number_of_maze_cells[x][7] = 0;
+    }
+}
 
-    // Goal is centre of maze? or top right?
+void flood_fill_setup(){ 
+// We start by calling the 2d array 
+    calculate_flood_fill();
+    
+    //Calls to see what cell has lee number
+    bool visited[8][8] = {};
+    //stores cells in queue
+    int queue_x[64], queue_y[64];
+    int head = 0, tail = 0;
+
     number_of_maze_cells[7][7] = 0;
+    visited[7][7] = true;
+    queue_x[tail] = 7; queue_y[tail] = 7; tail++;
 
-    //need to update this section for bfs (I used AI for this bit couldnt figure out myself or find where to look)
+    //Process till empty 
+    while(head != tail){
+        int cx = queue_x[head];
+        int cy = queue_y[head];
+        head++;
+       
+    //Kind of explanitory
+        int next_val = number_of_maze_cells[cx][cy] + 1;
+
+    //Check North neighbour, if not visited assign Lee number and add to the queue thingy
+        if(cy < 7 && !visited[cx][cy+1]){
+            number_of_maze_cells[cx][cy+1] = next_val;
+            visited[cx][cy+1] = true;
+            queue_x[tail] = cx; queue_y[tail] = cy+1; tail++;
+        }
+        // Check East neighbour, do same
+        if(cx < 7 && !visited[cx+1][cy]){
+            number_of_maze_cells[cx+1][cy] = next_val;
+            visited[cx+1][cy] = true;
+            queue_x[tail] = cx+1; queue_y[tail] = cy; tail++;
+        }
+        //Check South
+        if(cy > 0 && !visited[cx][cy-1]){
+            number_of_maze_cells[cx][cy-1] = next_val;
+            visited[cx][cy-1] = true;
+            queue_x[tail] = cx; queue_y[tail] = cy-1; tail++;
+        }
+        //Check west
+        if(cx > 0 && !visited[cx-1][cy]){
+            number_of_maze_cells[cx-1][cy] = next_val;
+            visited[cx-1][cy] = true;
+            queue_x[tail] = cx-1; queue_y[tail] = cy; tail++;
+            }
+        }
+    }
+
+
+void flood_fill_update(){
+    void flood_fill_update(){
+    // Reset all cells when unvisited and walls will update this as being discovered 
+    for(int x = 0; x < 8; x++){
+        number_of_maze_cells[x][0] = 999;
+        number_of_maze_cells[x][1] = 999;
+        number_of_maze_cells[x][2] = 999;
+        number_of_maze_cells[x][3] = 999;
+        number_of_maze_cells[x][4] = 999;
+        number_of_maze_cells[x][5] = 999;
+        number_of_maze_cells[x][6] = 999;
+        number_of_maze_cells[x][7] = 999;
+    }
+
+    // Set goal cell [7][7] to 0 and add to queue
+    number_of_maze_cells[7][7] = 0;
     int queue_x[64], queue_y[64];
     int head = 0, tail = 0;
     queue_x[tail] = 7; queue_y[tail] = 7; tail++;
 
-
+    // Process queue until empty
     while(head != tail){
         int cx = queue_x[head];
         int cy = queue_y[head];
         head++;
+        // NExplanitory again
         int next_val = number_of_maze_cells[cx][cy] + 1;
 
-        if(cy < 7 && !(number_of_maze_walls[cx][cy] & 1) && number_of_maze_cells[cx][cy+1] == 999)
-            { number_of_maze_cells[cx][cy+1] = next_val; queue_x[tail] = cx;   queue_y[tail] = cy+1; tail++; }
-        if(cx < 7 && !(number_of_maze_walls[cx][cy] & 2) && number_of_maze_cells[cx+1][cy] == 999)
-            { number_of_maze_cells[cx+1][cy] = next_val; queue_x[tail] = cx+1; queue_y[tail] = cy;   tail++; }
-        if(cy > 0 && !(number_of_maze_walls[cx][cy] & 4) && number_of_maze_cells[cx][cy-1] == 999)
-            { number_of_maze_cells[cx][cy-1] = next_val; queue_x[tail] = cx;   queue_y[tail] = cy-1; tail++; }
-        if(cx > 0 && !(number_of_maze_walls[cx][cy] & 8) && number_of_maze_cells[cx-1][cy] == 999)
-            { number_of_maze_cells[cx-1][cy] = next_val; queue_x[tail] = cx-1; queue_y[tail] = cy;   tail++; }
-    }
-}
-
-void flood_fill_setup(){ // need to fix, to setup up the 2d array details, of inital lees number
-    calculate_flood_fill(); //this will do everthing
-}
-
-
-
-void flood_fill_update(){
-    // update lees number, and to control priority for t junctions (Also done with AI to fit the other pasted code)
-    int queue_x[64], queue_y[64];
-    int head = 0, tail = 0;
-    queue_x[tail] = mouse_position_x;
-    queue_y[tail] = mouse_position_y;
-    tail++;
-
-    while(head != tail){
-        int cx = queue_x[head];
-        int cy = queue_y[head];
-        head++;
-
-        int min_n = 999;
-        if(cy < 7 && !(number_of_maze_walls[cx][cy] & 1)) if(number_of_maze_cells[cx][cy+1] < min_n) min_n = number_of_maze_cells[cx][cy+1];
-        if(cx < 7 && !(number_of_maze_walls[cx][cy] & 2)) if(number_of_maze_cells[cx+1][cy] < min_n) min_n = number_of_maze_cells[cx+1][cy];
-        if(cy > 0 && !(number_of_maze_walls[cx][cy] & 4)) if(number_of_maze_cells[cx][cy-1] < min_n) min_n = number_of_maze_cells[cx][cy-1];
-        if(cx > 0 && !(number_of_maze_walls[cx][cy] & 8)) if(number_of_maze_cells[cx-1][cy] < min_n) min_n = number_of_maze_cells[cx-1][cy];
-
-        if(number_of_maze_cells[cx][cy] != min_n + 1){
-            number_of_maze_cells[cx][cy] = min_n + 1;
-            if(cy < 7 && !(number_of_maze_walls[cx][cy] & 1)){ queue_x[tail] = cx;   queue_y[tail] = cy+1; tail++; }
-            if(cx < 7 && !(number_of_maze_walls[cx][cy] & 2)){ queue_x[tail] = cx+1; queue_y[tail] = cy;   tail++; }
-            if(cy > 0 && !(number_of_maze_walls[cx][cy] & 4)){ queue_x[tail] = cx;   queue_y[tail] = cy-1; tail++; }
-            if(cx > 0 && !(number_of_maze_walls[cx][cy] & 8)){ queue_x[tail] = cx-1; queue_y[tail] = cy;   tail++; }
+        // Check North, skips if north wall exists otherwise it will assign a Lee number beforew we add to queue thingy
+        if(cy < 7 && !(number_of_maze_walls[cx][cy] & 1) && number_of_maze_cells[cx][cy+1] == 999){
+            number_of_maze_cells[cx][cy+1] = next_val;
+            queue_x[tail] = cx; queue_y[tail] = cy+1; tail++;
+        }
+        // Check East 
+        if(cx < 7 && !(number_of_maze_walls[cx][cy] & 2) && number_of_maze_cells[cx+1][cy] == 999){
+            number_of_maze_cells[cx+1][cy] = next_val;
+            queue_x[tail] = cx+1; queue_y[tail] = cy; tail++;
+        }
+        // Check South 
+        if(cy > 0 && !(number_of_maze_walls[cx][cy] & 4) && number_of_maze_cells[cx][cy-1] == 999){
+            number_of_maze_cells[cx][cy-1] = next_val;
+            queue_x[tail] = cx; queue_y[tail] = cy-1; tail++;
+        }
+        // Check West
+        if(cx > 0 && !(number_of_maze_walls[cx][cy] & 8) && number_of_maze_cells[cx-1][cy] == 999){
+            number_of_maze_cells[cx-1][cy] = next_val;
+            queue_x[tail] = cx-1; queue_y[tail] = cy; tail++;
+            }
         }
     }
 }
 
-
-
 void steps(){ // expand on loops when testing hardware
-    Stepper_Motor_1_Step = 1;
+    Stepper_Motor_1_Step = 1; 
     Stepper_Motor_2_Step = 1;
     wait_us(1000);
-    Stepper_Motor_1_Step = 0;
+    Stepper_Motor_1_Step = 0; 
     Stepper_Motor_2_Step = 0;
     wait_us(1000);
 }
@@ -305,8 +352,9 @@ int main(){
         wait_us(10000);
         update_walls(front, left, right);
         wait_us(10000);
-   
-        if(mouse_position_x == 7 && mouse_position_y == 7){
+    
+        if((mouse_position_x == 3 || mouse_position_x == 4) &&
+           (mouse_position_y == 3 || mouse_position_y == 4)){
             break;
         // end program
         }
