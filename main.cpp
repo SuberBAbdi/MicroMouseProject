@@ -1,9 +1,9 @@
 #include "mbed.h"
 //Later change pins to right settings
-DigitalOut Stepper_Motor_1_Step(p22); // Left Motor
-DigitalOut Stepper_Motor_1_Direction(p23); // Left Motor
-DigitalOut Stepper_Motor_2_Step(p7); // Right Motor
-DigitalOut Stepper_Motor_2_Direction(p8); // Right Motor
+DigitalOut Stepper_Motor_1_Step(p21); // Left Motor
+DigitalOut Stepper_Motor_1_Direction(p22); // Left Motor
+DigitalOut Stepper_Motor_2_Step(p23); // Right Motor
+DigitalOut Stepper_Motor_2_Direction(p24); // Right Motor
 DigitalIn US_Sensor_Echo(p12); // Ultrasonic Sensor
 DigitalOut US_Sensor_Trig(p13); // Ultrasonic Sensor
 BusIn Left_Sensors (p8,p7,p6); // Left Bus Sensor
