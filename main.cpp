@@ -1,13 +1,13 @@
 #include "mbed.h"
 //Later change pins to right settings
-DigitalOut Stepper_Motor_1_Step(p5);
-DigitalOut Stepper_Motor_1_Direction(p6);
-DigitalOut Stepper_Motor_2_Step(p7);
-DigitalOut Stepper_Motor_2_Direction(p8);
-DigitalIn US_Sensor_Echo(p9);
-DigitalOut US_Sensor_Trig(p10);
-BusIn Left_Sensors (p11,p12,p13); // Just do busin instead
-BusIn Right_Sensors (p14,p15,p16);
+DigitalOut Stepper_Motor_1_Step(p22); // Left Motor
+DigitalOut Stepper_Motor_1_Direction(p23); // Left Motor
+DigitalOut Stepper_Motor_2_Step(p7); // Right Motor
+DigitalOut Stepper_Motor_2_Direction(p8); // Right Motor
+DigitalIn US_Sensor_Echo(p12); // Ultrasonic Sensor
+DigitalOut US_Sensor_Trig(p13); // Ultrasonic Sensor
+BusIn Left_Sensors (p8,p7,p6); // Left Bus Sensor
+BusIn Right_Sensors (p11,p10,p9); // Right Bus Sensor
 
 Timer t;
 
@@ -36,14 +36,15 @@ double check_us_distance(bool ECHO){
     wait_us(10);
     US_Sensor_Trig = 0;
     //Wait for echo high
-    while(!US_Sensor_Echo);
+    while(!US_Sensor_Echo){};
     t.reset();
     t.start();
 
     //Wait for echo low
     while(US_Sensor_Echo){
-        t.stop();
     }
+    t.stop();
+
     echo_time = t.read_us();
 
     //Speed of sound = 0.343 mm/us
@@ -250,7 +251,6 @@ void flood_fill_setup(){
 
 
 void flood_fill_update(){
-    void flood_fill_update(){
     // Reset all cells when unvisited and walls will update this as being discovered 
     for(int x = 0; x < 8; x++){
         number_of_maze_cells[x][0] = 999;
