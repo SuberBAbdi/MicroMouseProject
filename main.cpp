@@ -43,9 +43,9 @@ double check_us_distance(bool ECHO){
     //Wait for echo low
     while(US_Sensor_Echo){
     }
-    t.stop();
+    t.stop(); 
 
-    echo_time = t.read_us();
+     echo_time = t.elapsed_time().count();
 
     //Speed of sound = 0.343 mm/us
     us_distance_mm = (echo_time*343)/2000;
@@ -78,7 +78,7 @@ int check_right_sensors(){
 }
 
 bool wall_in_front(){
-    return check_us_distance() < 80;
+    return check_us_distance(bool (ECHO)) < 80;
 }
 bool wall_to_left(){
     return check_left_sensors() == 1;
@@ -130,7 +130,7 @@ void mouse_location( bool front, bool left, bool right){
         }
     }
 
-    else if (orientation == 1){
+    if (orientation == 1){
         if(front == false){
             mouse_position_x++;
         }
@@ -148,7 +148,7 @@ void mouse_location( bool front, bool left, bool right){
         }
     }
 
-    else if (orientation == 2){
+    if (orientation == 2){
         if(front == false){
             mouse_position_y--;
         }
@@ -166,7 +166,7 @@ void mouse_location( bool front, bool left, bool right){
         }
     }
 
-    else if (orientation == 3){
+    if (orientation == 3){
         if(front == false){
             mouse_position_x--;
         }
@@ -249,7 +249,6 @@ void flood_fill_setup(){
         }
     }
 
-
 void flood_fill_update(){
     // Reset all cells when unvisited and walls will update this as being discovered 
     for(int x = 0; x < 8; x++){
@@ -299,7 +298,6 @@ void flood_fill_update(){
             }
         }
     }
-}
 
 void steps(){ // expand on loops when testing hardware
     Stepper_Motor_1_Step = 1; 
@@ -350,7 +348,7 @@ int main(){
         bool left = wall_to_left();
         bool right = wall_to_right();
         wait_us(10000);
-        update_walls(front, left, right);
+        void update_walls(bool front, bool left, bool right);
         wait_us(10000);
     
         if((mouse_position_x == 3 || mouse_position_x == 4) &&
@@ -392,4 +390,4 @@ int main(){
             calculate_flood_fill(); // deadend, recalculate needs number
         }
     }
-}
+};
