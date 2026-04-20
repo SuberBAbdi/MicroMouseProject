@@ -340,7 +340,7 @@ void u_turn(){
 
 int main(){
    
-    flood_fill_setup();
+    flood_fill_update();
 
     while (1){
         wait_us(10000);
@@ -348,7 +348,7 @@ int main(){
         bool left = wall_to_left();
         bool right = wall_to_right();
         wait_us(10000);
-        void update_walls(bool front, bool left, bool right);
+        update_walls(orientation, front, left, right);
         wait_us(10000);
     
         if((mouse_position_x == 3 || mouse_position_x == 4) &&
@@ -358,6 +358,7 @@ int main(){
         }
         //else if are priority based
         else if(front == false){
+            //thisThread function instead of wait_us and need bigger timeslot than 10,000us for the wait delay function for all four else if statements
             wait_us(10000);
             mouse_location(front, left, right); //update mouse_location
             wait_us(10000);
@@ -387,7 +388,7 @@ int main(){
             wait_us(10000);
             u_turn();
             wait_us(10000);
-            calculate_flood_fill(); // deadend, recalculate needs number
+            flood_fill_update(); 
         }
     }
-};
+}; 
