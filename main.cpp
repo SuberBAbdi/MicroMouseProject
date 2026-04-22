@@ -25,6 +25,7 @@ int number_of_maze_cells[8][8];
 int orientation = 0; // direction of the mouse, assume starting North always
 
 int first_calculate = 0;
+void share_walls(int x, int y);                                 // forward declaration made by NICK to help with shar walls function 
 
 double check_us_distance(bool ECHO){
     uint32_t echo_time = 0; //supposed to have values range from 0 - 49000
@@ -108,8 +109,23 @@ void update_walls(int orientation, bool front, bool left, bool right){
         if (left)  number_of_maze_walls[mouse_position_x][mouse_position_y] |= 4; // Mark West Wall, Left is South (4)
         if (right) number_of_maze_walls[mouse_position_x][mouse_position_y] |= 1; // Mark East Wall, Right is North (1)
         }
+    share_walls(mouse_position_x, mouse_position_y);                            //moved function to call here NICK which just reads the mouse position
 }
 
+void share_walls(int x, int y){                                                   //ADDED NEW FUNCTION NICK TO CHECK WALLS and Cells read on otherside too
+    // If this cell has a North wall, the cell above gets a South wall
+    if((number_of_maze_walls[x][y] & 1) && y < 7)
+        number_of_maze_walls[x][y+1] |= 4;
+    // If this cell has an East wall, the cell to the right gets a West wall
+    if((number_of_maze_walls[x][y] & 2) && x < 7)
+        number_of_maze_walls[x+1][y] |= 8;
+    // If this cell has a South wall, the cell below gets a North wall
+    if((number_of_maze_walls[x][y] & 4) && y > 0)
+        number_of_maze_walls[x][y-1] |= 1;
+    // If this cell has a West wall, the cell to the left gets an East wall
+    if((number_of_maze_walls[x][y] & 8) && x > 0)
+        number_of_maze_walls[x-1][y] |= 2;
+}                                                                           
 void mouse_location( bool front, bool left, bool right){ 
     // North = 0, East = 1, South = 2, West = 3
      if (orientation == 0){
@@ -185,6 +201,7 @@ void mouse_location( bool front, bool left, bool right){
     }
 }
 
+//we could move this whole function into one
     void calculate_flood_fill(){
     // So this initialise all cells to 0
     for(int x = 0; x < 8; x++){
@@ -340,7 +357,7 @@ void u_turn(){
 
 int main(){
    
-    flood_fill_update();
+    flood_fill_setup();
 
     while (1){
         wait_us(10000);
@@ -348,7 +365,7 @@ int main(){
         bool left = wall_to_left();
         bool right = wall_to_right();
         wait_us(10000);
-        update_walls(orientation, front, left, right);
+        update_walls(orientation, front, left, right);                      //Changed this Nick
         wait_us(10000);
     
         if((mouse_position_x == 3 || mouse_position_x == 4) &&
@@ -358,7 +375,6 @@ int main(){
         }
         //else if are priority based
         else if(front == false){
-            //thisThread function instead of wait_us and need bigger timeslot than 10,000us for the wait delay function for all four else if statements
             wait_us(10000);
             mouse_location(front, left, right); //update mouse_location
             wait_us(10000);
@@ -388,7 +404,7 @@ int main(){
             wait_us(10000);
             u_turn();
             wait_us(10000);
-            flood_fill_update(); 
+            calculate_flood_fill(); // deadend, recalculate needs number
         }
     }
-}; 
+};
